@@ -1,3 +1,4 @@
+import colorsys
 import math
 import random
 import time
@@ -9,7 +10,7 @@ import pygame
 TAU = 2. * math.pi
 
 SIZE = (600, 600)
-DOTS = 32
+DOTS = 128
 RADIUS = 250
 
 CENTER = np.array([SIZE[0] / 2, SIZE[1] / 2])
@@ -21,10 +22,14 @@ def norm(v):
 	return v / mag(v)
 
 class Dot:
-	def __init__(self, pos):
-		self.pos = pos
-		self.color = (255, 0, 0)
+	def __init__(self, fract):
 		self.path = []
+
+		theta = random.random() * TAU
+		self.pos = np.array([CENTER[0] + RADIUS * math.cos(theta), CENTER[1] + RADIUS * math.sin(theta)])
+
+		csys = colorsys.hsv_to_rgb(fract / 6, 1, 1)
+		self.color = (csys[0]*255, csys[1]*255, csys[2]*255)
 
 	def int_pos(self):
 		return (int(self.pos[0]), int(self.pos[1]))
@@ -61,10 +66,8 @@ def reset_state():
 	state = dotdict.dotdict()
 
 	state.dots = []
-	for _ in range(DOTS):
-		theta = random.random() * TAU
-		pos = np.array([CENTER[0] + RADIUS * math.cos(theta), CENTER[1] + RADIUS * math.sin(theta)])
-		dot = Dot(pos)
+	for i in range(DOTS):
+		dot = Dot(float(i) / DOTS)
 		state.dots.append(dot)
 
 	return state
